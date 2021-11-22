@@ -25,17 +25,18 @@ namespace ProEventos.Application
             _geralPersistence = geralPersistence;
             _mapper = mapper;
         }
-        public async Task<EventoDto> AddEventos(EventoDto model)
+        public async Task<EventoDto> AddEventos(int userId, EventoDto model)
         {
             try
             {
                 var evento = _mapper.Map<Evento>(model);
+                evento.UserId = userId;
 
                 _geralPersistence.Add<Evento>(evento);
 
                 if(await _geralPersistence.SaveChangesAsync())
                 {
-                    return _mapper.Map<EventoDto>(await _proEventos.GetAllEventoByIdAsync(evento.Id, false));
+                    return _mapper.Map<EventoDto>(await _proEventos.GetAllEventoByIdAsync(userId, evento.Id, false));
                 }
 
                 return null;
@@ -46,16 +47,17 @@ namespace ProEventos.Application
             }
         }
 
-        public async Task<EventoDto> Update(int eventoId, EventoDto model)
+        public async Task<EventoDto> Update(int userId, int eventoId, EventoDto model)
         {
             try
             {
-                var evento = await _proEventos.GetAllEventoByIdAsync(eventoId, false);
+                var evento = await _proEventos.GetAllEventoByIdAsync(userId, eventoId, false);
 
                 if(evento == null) 
                     return null; 
 
                 model.Id = evento.Id;
+                model.UserId = userId;
 
                 // Mapeando de um objeto para outro objeto
                 _geralPersistence.Update(_mapper.Map(model, evento));
@@ -63,7 +65,7 @@ namespace ProEventos.Application
                 if(await _geralPersistence.SaveChangesAsync())
                 {   
                     // Mapeando de um tipo para outro tipo
-                    return _mapper.Map<EventoDto>(await _proEventos.GetAllEventoByIdAsync(model.Id, false));
+                    return _mapper.Map<EventoDto>(await _proEventos.GetAllEventoByIdAsync(userId, model.Id, false));
                 }
 
                 return null;
@@ -74,11 +76,11 @@ namespace ProEventos.Application
             }
         }
 
-        public async Task<bool> DeleteEvento(int eventoId)
+        public async Task<bool> DeleteEvento(int userId, int eventoId)
         {
             try
             {
-                var entity = await _proEventos.GetAllEventoByIdAsync(eventoId, false);
+                var entity = await _proEventos.GetAllEventoByIdAsync(userId, eventoId, false);
 
                 if(entity == null)
                 {
@@ -95,11 +97,11 @@ namespace ProEventos.Application
             }
         }
 
-        public async Task<EventoDto> GetAllEventoByIdAsync(int eventoId, bool includePalestrantes)
+        public async Task<EventoDto> GetAllEventoByIdAsync(int userId, int eventoId, bool includePalestrantes)
         {
             try
             {
-                var evento =  await _proEventos.GetAllEventoByIdAsync(eventoId, false);
+                var evento =  await _proEventos.GetAllEventoByIdAsync(userId, eventoId, false);
 
                 if(evento == null)
                 {
@@ -114,11 +116,11 @@ namespace ProEventos.Application
             }
         }
 
-        public async Task<EventoDto[]> GetAllEventosAsync(bool includePalestrantes = false)
+        public async Task<EventoDto[]> GetAllEventosAsync(int userId, bool includePalestrantes = false)
         {
             try
             {
-                var eventos = await  _proEventos.GetAllEventosAsync(includePalestrantes);
+                var eventos = await  _proEventos.GetAllEventosAsync(userId, includePalestrantes);
 
                 if(eventos == null)
                 {
@@ -135,11 +137,11 @@ namespace ProEventos.Application
             }
         }
 
-        public async Task<EventoDto[]> GetAllEventosByTemaAsync(string tema, bool includePalestrantes = false)
+        public async Task<EventoDto[]> GetAllEventosByTemaAsync(int userId, string tema, bool includePalestrantes = false)
         {
-            try
+            try 
             {
-                var eventos =  await _proEventos.GetAllEventosByTemaAsync(tema,  includePalestrantes);
+                var eventos =  await _proEventos.GetAllEventosByTemaAsync(userId, tema,  includePalestrantes);
 
                 if(eventos == null)
                 {

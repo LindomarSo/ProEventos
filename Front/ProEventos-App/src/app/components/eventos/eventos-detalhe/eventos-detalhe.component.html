@@ -211,7 +211,7 @@
   </div>
   <div class="col-md-4" *ngIf="modeEditar">
     <div [formGroup]="form" class="card-evento-view shadow-sm">
-      <div class="form-row">
+      <div class="row">
         <div class="form-group m-0">
           <input type="file" (change)="onFileChange($event)"  #file class="form-control is-invalid" placeholder="" style="display: none">
         </div>
