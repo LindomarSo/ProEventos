@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule} from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS} from '@angular/common/http';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CollapseModule } from 'ngx-bootstrap/collapse';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -32,6 +32,9 @@ import { EventosListComponent } from './components/eventos/eventos-list/eventos-
 import { UserComponent } from './components/user/user.component';
 import { LoginComponent } from './components/user/login/login.component';
 import { RegistrationComponent } from './components/user/registration/registration.component';
+import { AccountService } from './services/account.service';
+import { JwtInterceptor } from './interceptor/jwt.interceptor';
+import { HomeComponent } from './components/home/home.component';
 defineLocale('pt-br', ptBrLocale);
 
 @NgModule({
@@ -49,7 +52,8 @@ defineLocale('pt-br', ptBrLocale);
     EventosListComponent,
     UserComponent,
     LoginComponent,
-    RegistrationComponent
+    RegistrationComponent,
+    HomeComponent
   ],
   imports: [
     BrowserModule,
@@ -73,11 +77,13 @@ defineLocale('pt-br', ptBrLocale);
     AppRoutingModule
   ],
   providers: [
+    AccountService,
     EventoService,
     BsModalService,
     ToastrService,
     NgxSpinnerService,
-    BsLocaleService
+    BsLocaleService,
+    {provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true}
   ],
   bootstrap: [AppComponent]
 })

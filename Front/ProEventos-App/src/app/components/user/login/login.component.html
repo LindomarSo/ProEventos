@@ -2,15 +2,29 @@
 
 	<div class="mx-auto text-center shadow bg-white rounded p-5 my-5">
 
-		<form class="form-signin">
+		<form #loginForm="ngForm" class="form-signin" (ngSubmit)="login()">
 			<i class="fa fa-users mb-2"></i>
 			<h1 class="h3 mb-3 font-weight-normal">Entrar com</h1>
 			<label for="username" class="sr-only">Usuário</label>
-			<input type="email" id="username" class="form-control" placeholder="Usuário" name="username" required>
+			<input
+      [(ngModel)]="model.userName"
+        type="email"
+        name="username"
+        id="username"
+        class="form-control"
+        placeholder="Usuário"
+        required>
 			<label for="password" class="sr-only">Password</label>
-			<input type="password" id="password" class="form-control" placeholder="Senha" name="password" required>
+			<input
+      [(ngModel)]="model.password"
+        type="password"
+        name="password"
+        id="password"
+        class="form-control"
+        placeholder="Senha"
+        required>
 			<div class="d-grid gap-2">
-        <button class="btn-primary btn btn-lg" type="submit">Entrar</button>
+        <button [disabled]="loginForm.invalid" class="btn-primary btn btn-lg" type="submit">Entrar</button>
       </div>
 			<p class="mt-4 mb-2 text-muted">Não tem login? Cadastre-se abaixo</p>
 			<a class="btn btn-lg text-primary" routerLink="/user/registrar">Quero me cadastrar</a>

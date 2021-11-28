@@ -1,6 +1,6 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm" *ngIf="showMenu()">
   <div class="container">
-    <a class="navbar-brand" [routerLink]="['/dashboard']">
+    <a class="navbar-brand" [routerLink]="['/home']">
       <i class="fa fa-users "></i>
     </a>
     <button
@@ -16,26 +16,37 @@
     </button>
     <div class="collapse navbar-collapse" [collapse]="isCollapsed" [isAnimated]="true" id="navbarNav">
       <ul class="navbar-nav me-auto">
-        <li class="nav-item" routerLinkActive="active">
-          <a class="nav-link" aria-current="page" [routerLink]="['/eventos']">Eventos</a>
-        </li>
-        <li class="nav-item" routerLinkActive="active">
-          <a class="nav-link" [routerLink]="['/palestrantes']">Palestrantes</a>
-        </li>
-        <li class="nav-item" routerLinkActive="active">
-          <a class="nav-link" [routerLink]="['/contato']">Contato</a>
-        </li>
+        <ng-container *ngIf="(accountService.currentUser$ | async) !== null">
+          <li class="nav-item" routerLinkActive="active">
+            <a class="nav-link" aria-current="page" [routerLink]="['/dashboard']">Dashboard</a>
+          </li>
+          <li class="nav-item" routerLinkActive="active">
+            <a class="nav-link" aria-current="page" [routerLink]="['/eventos']">Eventos</a>
+          </li>
+          <li class="nav-item" routerLinkActive="active">
+            <a class="nav-link" [routerLink]="['/palestrantes']">Palestrantes</a>
+          </li>
+          <li class="nav-item" routerLinkActive="active">
+            <a class="nav-link" [routerLink]="['/contato']">Contato</a>
+          </li>
+        </ng-container>
       </ul>
-      <ul class="btn-group navbar-nav" dropdown>
-        <button id="button-basic" dropdownToggle type="button" class="btn btn-white dropdown-toggle"
+      <div *ngIf="(accountService.currentUser$ | async) === null" class="navbar-nab me-3 d-xs-none d-none d-md-block">
+       <a routerLink="/user/login" class="btn btn-ligth me-2 border">Entrar</a>
+       <a routerLink="/user/registrar" class="btn btn-warning">Me Cadastrar</a>
+      </div>
+      <ul  class="btn-group navbar-nav" dropdown>
+        <button *ngIf="(accountService.currentUser$ | async) as user"
+            id="button-basic"
+            dropdownToggle type="button" class="btn btn-white dropdown-toggle"
                 aria-controls="dropdown-basic">
-          Lindomar <span class="caret"></span>
+          {{ user.userName | titlecase }} <span class="caret"></span>
         </button>
-        <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu"
+        <ul id="dropdown-basic" *dropdownMenu class="dropdown-menu dropdown-menu-right"
             role="menu" aria-labelledby="button-basic">
           <li role="menuitem"><a class="dropdown-item" routerLink="user/perfil">Perfil</a></li>
           <li class="divider dropdown-divider"></li>
-          <li role="menuitem"><a class="dropdown-item" routerLink="user/login">Sair</a>
+          <li (click)="logout()" role="menuitem"><a class="dropdown-item" style="cursor: pointer;">Sair</a>
           </li>
         </ul>
       </ul>

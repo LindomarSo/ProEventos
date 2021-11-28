@@ -46,7 +46,7 @@ namespace ProEventos.API.Controllers
 
         [HttpPost("Register")] 
         [AllowAnonymous]
-        public async Task<IActionResult> Rgister(UserDto userDto)
+        public async Task<IActionResult> Rgister(UserUpdateDto userDto)
         {
             try
             {
@@ -58,7 +58,12 @@ namespace ProEventos.API.Controllers
                 var user = await _accountService.CreateAccountAsync(userDto);
 
                 return (user != null) 
-                                    ? Ok(user)
+                                    ? Ok(new 
+                                    {
+                                        UserName = user.UserName,
+                                        PrimeiroNome = user.PrimeiroNome,
+                                        token = _tokenService.CreateToken(user).Result
+                                    })
                                     : BadRequest("Usuário não criado tente novamente mais tarde");
             }
             catch(Exception ex)
@@ -105,6 +110,9 @@ namespace ProEventos.API.Controllers
         {
             try
             {
+                if(userUpdateDto.UserName != User.GetUserName())
+                    return Unauthorized("Usuário inválido");
+
                 var user = await _accountService.GetUserByUserNameAsync(User.GetUserName());
 
                 if(user == null) return Unauthorized("Usuário inválido");
@@ -112,7 +120,11 @@ namespace ProEventos.API.Controllers
                 var userRetorno = await _accountService.UpdateAccountAsync(userUpdateDto);
 
                 return (userRetorno != null) 
-                                    ? Ok(userRetorno)
+                                    ? Ok(new {
+                                        UserName = userRetorno.UserName,
+                                        PrimeiroNome = userRetorno.PrimeiroNome,
+                                        token = _tokenService.CreateToken(userRetorno).Result
+                                    })
                                     : NoContent();
             }
             catch(Exception ex)

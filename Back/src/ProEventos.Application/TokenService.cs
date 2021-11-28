@@ -35,6 +35,7 @@ namespace ProEventos.Application
         {
             var user = _mapper.Map<User>(userUpdateDto);
 
+            // Claims são afirmações sobre o usuário por exemplo nome, email, id etc
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
