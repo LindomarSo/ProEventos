@@ -116,39 +116,25 @@ namespace ProEventos.Application
             }
         }
 
-        public async Task<EventoDto[]> GetAllEventosAsync(int userId, bool includePalestrantes = false)
+        public async Task<PageList<EventoDto>> GetAllEventosAsync(int userId, PageParams pageParams, bool includePalestrantes = false)
         {
             try
             {
-                var eventos = await  _proEventos.GetAllEventosAsync(userId, includePalestrantes);
+                var eventos = await  _proEventos.GetAllEventosAsync(userId, pageParams, includePalestrantes);
 
                 if(eventos == null)
                 {
                     return null;
                 }
 
-                var retorno = _mapper.Map<EventoDto[]>(eventos);
+                var retorno = _mapper.Map<PageList<EventoDto>>(eventos);
+
+                retorno.CurrentPage = eventos.CurrentPage;
+                retorno.TotalPages = eventos.TotalPages;
+                retorno.PageSize = eventos.PageSize;
+                retorno.TotalCount = eventos.TotalCount;
 
                 return retorno;
-            }
-            catch(Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-        }
-
-        public async Task<EventoDto[]> GetAllEventosByTemaAsync(int userId, string tema, bool includePalestrantes = false)
-        {
-            try 
-            {
-                var eventos =  await _proEventos.GetAllEventosByTemaAsync(userId, tema,  includePalestrantes);
-
-                if(eventos == null)
-                {
-                    return null;
-                }
-
-                return _mapper.Map<EventoDto[]>(eventos);;
             }
             catch(Exception ex)
             {

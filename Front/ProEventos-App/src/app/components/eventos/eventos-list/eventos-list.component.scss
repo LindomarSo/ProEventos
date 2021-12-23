@@ -1,6 +1,21 @@
-.hover-edit :hover{
-  transform: scale(1.003);
-  background-color: transparent 0.2s;
-  box-shadow: 0 0 16px -5px rgb(50, 50, 50);
-  transition: all ease-out .2s;
+.table-folder{
+  border-collapse: separate;
+  border-spacing: 0 16px;
+  width: 100%;
+}
+
+td, th{
+  padding: 24px;
+}
+
+thead tr th{
+  text-align: center;
+}
+
+tbody tr td{
+  font-size: 14px;
+  background-color: #fff;
+  margin-bottom: 16px;
+  box-shadow: 4px 0 8px rgba(0,0,0,0.1);
+  text-align: center !important;
 }

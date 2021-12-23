@@ -9,6 +9,7 @@ using ProEventos.Application.Contratos;
 using ProEventos.Application.Dtos;
 using ProEventos.API.Extensions;
 using Microsoft.AspNetCore.Authorization;
+using ProEventos.Domain.Models;
 
 namespace ProEventos.API.Controllers
 {
@@ -31,11 +32,11 @@ namespace ProEventos.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get([FromQuery] PageParams pageParams)
         {
             try
             {
-                var eventos = await _eventoService.GetAllEventosAsync(User.GetUserId(),false);
+                var eventos = await _eventoService.GetAllEventosAsync(User.GetUserId(), pageParams, false);
 
                 if(eventos == null)
                 {
@@ -57,6 +58,8 @@ namespace ProEventos.API.Controllers
                 //         Email = evento.Email
                 //     });
                 // }
+
+                Response.AddPagination(eventos.CurrentPage, eventos.PageSize, eventos.TotalCount, eventos.TotalPages);
                 
                 return Ok(eventos);
             }
@@ -85,28 +88,6 @@ namespace ProEventos.API.Controllers
             {
                 return this.StatusCode(StatusCodes.Status500InternalServerError, 
                             $"Erro ao tentar recuperar o evento {ex.Message}" 
-                );
-            }
-        }
-
-        [HttpGet("tema/{tema}")]
-        public async Task<IActionResult> GetByTema(string tema)
-        {
-            try
-            {
-                var eventos =  await _eventoService.GetAllEventosByTemaAsync(User.GetUserId(), tema, true);
-
-                if(eventos == null)
-                {
-                    return NoContent();
-                }
-
-                return Ok(eventos);
-            }
-            catch(Exception ex)
-            {
-                return this.StatusCode(StatusCodes.Status500InternalServerError, 
-                    $"Erro ao tentar pegar o evento pelo tema. {ex.Message}"  
                 );
             }
         }
@@ -147,7 +128,9 @@ namespace ProEventos.API.Controllers
                 var file = Request.Form.Files[0]; // Pega o primeiro file que tive 
                 if(file.Length > 0)
                 {
-                    DeleteImage(eventos.ImagemURL);
+                    if(eventos.ImagemURL != null)
+                        DeleteImage(eventos.ImagemURL);
+                        
                     eventos.ImagemURL = await SaveImage(file);
                 }
 

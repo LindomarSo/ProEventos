@@ -1,0 +1,31 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "9ae06ba2-26eb-4ddc-a127-2921e93b9945": {
+      "ProjectGuid": "9ae06ba2-26eb-4ddc-a127-2921e93b9945",
+      "DisplayName": "ProEventos.Domain",
+      "ColorIndex": 0
+    },
+    "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3": {
+      "ProjectGuid": "a2fe74e1-b743-11d0-ae1a-00a0c90fffc3",
+      "DisplayName": "Miscellaneous Files",
+      "ColorIndex": -1
+    },
+    "62ef4efc-5faa-47b5-894f-1d6c4885025f": {
+      "ProjectGuid": "62ef4efc-5faa-47b5-894f-1d6c4885025f",
+      "DisplayName": "ProEventos.Persistence",
+      "ColorIndex": 1
+    },
+    "d19fa68b-2921-40de-bb12-471aad355c4d": {
+      "ProjectGuid": "d19fa68b-2921-40de-bb12-471aad355c4d",
+      "DisplayName": "ProEventos.Application",
+      "ColorIndex": 2
+    },
+    "ce851e66-10aa-4653-97bd-f0f316f6b33d": {
+      "ProjectGuid": "ce851e66-10aa-4653-97bd-f0f316f6b33d",
+      "DisplayName": "ProEventos.API",
+      "ColorIndex": 3
+    }
+  },
+  "NextColorIndex": 4
+}

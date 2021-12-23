@@ -8,7 +8,7 @@
         <input
           type="text"
           class="form-control mr-2"
-          [(ngModel)]="filtroLista"
+          (input)="filtrarEventos($event.target)"
           placeholder="Buscar">
       </div>
     </div>
@@ -21,11 +21,11 @@
       </a>
     </div>
   </div>
-  <table class="table table-ligth">
-    <thead class="table-dark">
+  <table class="table-light table-folder">
+    <thead>
       <tr>
         <th class="d-none d-md-table-cell">
-          <button (click)="exibir()" class="btn btn-sm btn-outline-light ">
+          <button (click)="exibir()" class="btn btn-sm btn-outline-dark ">
             <i class="{{!exibirImg ? 'fa fa-eye' : 'fa fa-eye-slash'}}"></i>
             {{exibirImg ? 'Fechar' : 'Exibir'}}
           </button>
@@ -40,7 +40,7 @@
       </tr>
     </thead>
     <tbody class="hover-edit" *ngIf="eventos && eventos.length">
-      <tr *ngFor="let evento of eventosFiltrados" (click)="detalheEvento(evento.id)" style="cursor: pointer;">
+      <tr *ngFor="let evento of eventos" (click)="detalheEvento(evento.id)" style="cursor: pointer;">
         <td class="d-none d-md-table-cell">
           <img [collapse]="exibirImg" [isAnimated]="true" [src]="imageURL(evento.imagemURL)"
           alt="image"
@@ -70,6 +70,23 @@
       </tr>
     </tfoot>
   </table>
+  <div class="d-flex justify-content-center">
+    <pagination
+            [boundaryLinks]="true"
+            [totalItems]="pagination.totalItems"
+            [(ngModel)]="pagination.currentPage"
+            [itemsPerPage]="pagination.itemsPerPage"
+
+            pageBtnClass="btn"
+
+            previousText="&lsaquo;"
+            nextText="&rsaquo;"
+            firstText="&laquo;"
+            lastText="&raquo;"
+
+            (pageChanged)="pageChanged($event)"
+            >
+    </pagination>
 </div>
 
 <ng-template #template>

@@ -6,6 +6,9 @@ import { ToastrService } from 'ngx-toastr';
 import { Evento } from '@app/models/Evento';
 import { EventoService } from '@app/services/evento.service';
 import { environment } from 'src/environments/environment';
+import { Pagination, PaginationResult } from '@app/models/Pagination';
+import { Subject } from 'rxjs';
+import { debounceTime, throttleTime } from 'rxjs/operators';
 
 @Component({
   selector: 'app-eventos-list',
@@ -17,31 +20,47 @@ export class EventosListComponent implements OnInit {
   public eventos: Evento[] = [];
   public eventoId!: number;
   public evento: string = "Eventos";
-  private _filtroLista: string = '';
+  // private _filtroLista: string = '';  usuado apenas para o filtro do lado do cliente
   public exibirImg: boolean = false;
-  public eventosFiltrados: Evento[] = [];
+  // public eventosFiltrados: Evento[] = []; usado tambem para filtro do lado cliente
   public widthImg: number = 100;
   public marginImg: number = 2;
   public modalRef?: BsModalRef;
+  public pagination = { } as Pagination;
+  public termoBuscaChanged: Subject<string> = new Subject<string>();
 
-  public get filtroLista(): string
-  {
-      return this._filtroLista;
-  }
+  // public get filtroLista(): string Usado apenas para o filtro do lado do cliente
+  // {
+  //     return this._filtroLista;
+  // }
 
-  public set filtroLista(value: string)
-  {
-    this._filtroLista = value;
-    this.eventosFiltrados = this.filtroLista ? this.filtrarEventos(value) : this.eventos;
-  }
+  // public set filtroLista(value: string) // Ainda sobre o filtro do lado do cliente
+  // {
+  //   this._filtroLista = value;
+  //   this.eventosFiltrados = this.filtroLista ? this.filtrarEventos(value) : this.eventos;
+  // }
 
-  public filtrarEventos(filtrarPor: string): Evento[]
+  public filtrarEventos(event: any): void
   {
-    filtrarPor = filtrarPor.toLocaleLowerCase();
-    return this.eventos.filter(
-      evento => evento.tema!.toLocaleLowerCase().indexOf(filtrarPor) !== -1 ||
-      evento.local.toLocaleLowerCase().indexOf(filtrarPor) !== -1
-    );
+    if(this.termoBuscaChanged.observers.length === 0)
+    {
+      this.termoBuscaChanged.pipe(debounceTime(1000)).subscribe( // DEBOUNCETIME É MUITO ÚTIL QUANDO SE QUISER FAZER MUITAS COISAS AUTOMÁTICAS INCLUSIVE SALVAR
+        filtrarPor => {
+          this.spinner.show();
+          this.eventoService.getAll(this.pagination.currentPage, this.pagination.itemsPerPage, filtrarPor).subscribe(
+            (response: PaginationResult<Evento[]>) => {
+              this.eventos = response.result
+              this.pagination = response.pagination;
+            },
+            (error: any) =>{
+              this.toastr.error("Erro ao carregar os eventos");
+              console.error(error);
+            }
+          ).add(() => this.spinner.hide())
+        }
+      )
+    }
+    this.termoBuscaChanged.next(event.value); // Tem que ficar depois do if
   }
 
   constructor(
@@ -52,16 +71,18 @@ export class EventosListComponent implements OnInit {
           private router: Router) { }
 
   public ngOnInit(): void {
-    this.spinner.show();
+    this.pagination = { currentPage: 1, itemsPerPage: 2, totalItems: 1 } as Pagination;
     this.getEventos();
   }
 
   public getEventos(): void
   {
-    this.eventoService.getAll().subscribe({
-      next: (eventos: Evento[]) =>{
-        this.eventos = eventos;
-        this.eventosFiltrados = this.eventos;
+    this.spinner.show();
+    this.eventoService.getAll(this.pagination.currentPage, this.pagination.itemsPerPage).subscribe({
+      next: (response: PaginationResult<Evento[]>) =>{
+        this.eventos =response.result;
+        // this.eventosFiltrados = this.eventos; //  FILTRO DO LADO DO CLIENTE
+        this.pagination =response.pagination;
       },
       error: (error: any) => {
         this.toastr.error("Não foi possível carregar os eventos!", "Error")
@@ -119,6 +140,12 @@ export class EventosListComponent implements OnInit {
   public imageURL(imageName: string): string
   {
     return imageName !== '' ? environment.apiURL+'resources/images/'+imageName : 'assets/semImage.png';
+  }
+
+  public pageChanged(event: any) : void
+  {
+    this.pagination.currentPage = event.page;
+    this.getEventos();
   }
 
 }

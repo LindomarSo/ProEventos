@@ -14,23 +14,8 @@ namespace ProEventos.Persistence
         {
             _context = context;
         }
-        public async Task<Evento[]> GetAllEventosByTemaAsync(int userId, string tema, bool includePalestrantes = false)
-        {
-            IQueryable<Evento> query = _context.Eventos.Include(R => R.RedesSociais)
-                                                        .Include(L => L.Lotes);
 
-            if(includePalestrantes)
-                query = query.Include(e => e.PalestrantesEventos)
-                              .ThenInclude(PE => PE.Palestrante);
-
-            query =  query.OrderBy(e => e.Id)
-                            .Where(e => e.Tema.ToLower()
-                            .Contains(tema.ToLower()) && e.UserId == userId); 
-
-            return await query.ToArrayAsync();
-        }
-
-        public async Task<Evento[]> GetAllEventosAsync(int userId, bool includePalestrantes = false)
+        public async Task<PageList<Evento>> GetAllEventosAsync(int userId, PageParams pageParams, bool includePalestrantes = false)
         {
             IQueryable<Evento> query = _context.Eventos
                                                 .Include(e => e.Lotes)
@@ -42,9 +27,10 @@ namespace ProEventos.Persistence
 
             query = query
                         .OrderBy(e => e.Id)
-                        .Where(e => e.UserId == userId);
+                            .Where(e => (e.Tema.ToLower().Contains(pageParams.Term.ToLower()) || 
+                            e.Local.ToLower().Contains(pageParams.Term.ToLower())) && e.UserId == userId);
 
-            return await query.ToArrayAsync();
+            return await PageList<Evento>.CreateAsync(query, pageParams.PageNumber, pageParams.PageSize);
         }
         
         public async Task<Evento> GetAllEventoByIdAsync(int userId, int eventoId, bool includePalestrantes = false)

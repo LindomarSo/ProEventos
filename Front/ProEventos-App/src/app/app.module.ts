@@ -16,6 +16,7 @@ import { ToastrModule, ToastrService } from 'ngx-toastr';
 import { NgxSpinnerModule, NgxSpinnerService } from "ngx-spinner";
 import { BsDatepickerModule, BsLocaleService } from 'ngx-bootstrap/datepicker';
 import { NgxCurrencyModule } from "ngx-currency";
+import { PaginationModule } from 'ngx-bootstrap/pagination';
 
 import { AppComponent } from './app.component';
 import { EventosComponent } from './components/eventos/eventos.component';
@@ -66,6 +67,7 @@ defineLocale('pt-br', ptBrLocale);
     TooltipModule.forRoot(),
     BsDropdownModule.forRoot(),
     ModalModule,
+    PaginationModule.forRoot(),
     ToastrModule.forRoot({
       progressBar: true,
       timeOut: 3000,
