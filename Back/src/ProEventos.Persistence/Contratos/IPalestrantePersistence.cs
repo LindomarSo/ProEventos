@@ -3,10 +3,9 @@ using ProEventos.Domain.Models;
 
 namespace ProEventos.Persistence.Contratos
 {
-    public interface IPalestrantePersistence
+    public interface IPalestrantePersistence : IGeralPersistence
     {
-          Task<Palestrante[]> GetAllPatestrantesByNomeAsync(string nome, bool includeEventos);
-         Task<Palestrante[]> GetAllPalestrantesAsync(bool includeEventos);
-         Task<Palestrante> GetAllPatestranteByIdAsync(int palestranteId, bool includeEventos);
+         Task<PageList<Palestrante>> GetAllPalestrantesAsync(PageParams pageParams, bool includeEventos =  false);
+         Task<Palestrante> GetPalestranteByUserIdAsync(int userId, bool includeEventos = false);
     }
 }

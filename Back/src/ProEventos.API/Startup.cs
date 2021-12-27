@@ -15,6 +15,7 @@ using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using ProEventos.API.Helpers;
 using ProEventos.Application;
 using ProEventos.Application.Contratos;
 using ProEventos.Domain.Identity;
@@ -81,10 +82,14 @@ namespace ProEventos.API
 
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+            services.AddScoped<IUtils, Utils>();    
+
             #region  Application
             services.AddScoped<IEventoService, EventoService>();
             services.AddScoped<ILoteService, LoteService>();
             services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IRedeSocialService, RedeSocialService>();
+            services.AddScoped<IPalestranteService, PalestranteService>();
             services.AddScoped<ITokenService, TokenService>();
             #endregion
 
@@ -94,8 +99,9 @@ namespace ProEventos.API
             services.AddScoped<IPalestrantePersistence, PalestrantePersistence>();
             services.AddScoped<ILotePersistence, LotePersistence>();
             services.AddScoped<IUserPersistence, UserPersistence>();
+            services.AddScoped<IRedeSocialPersistence, RedeSocialPersistence>();
             #endregion
-            
+
             services.AddCors();
             services.AddSwaggerGen(options =>
             {

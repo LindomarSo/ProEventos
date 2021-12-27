@@ -7,18 +7,40 @@ using ProEventos.Persistence.Contratos;
 
 namespace ProEventos.Persistence
 {
-    public class PalestrantePersistence : IPalestrantePersistence
+    public class PalestrantePersistence : GeralPersistence, IPalestrantePersistence
     {
         private readonly EntityContext _context;
-        public PalestrantePersistence(EntityContext context)
+        public PalestrantePersistence(EntityContext context) : base(context)
         {
             _context = context;
         }
 
-        public async Task<Palestrante[]> GetAllPatestrantesByNomeAsync(string nome, bool includeEventos = false)
+        public async Task<PageList<Palestrante>> GetAllPalestrantesAsync(PageParams pageParams, bool includeEventos = false)
         {
             IQueryable<Palestrante> query = _context.Palestrantes
-                                                    .Include(p => p.RedesSociais);
+                                                    .Include(p => p.RedesSociais)
+                                                    .Include(p => p.User);
+
+            if (includeEventos)
+            {
+                query = query.Include(p => p.PalestrantesEventos)
+                                .ThenInclude(PE => PE.Evento);
+            }
+
+            query = query.Where(p => (p.User.PrimeiroNome.ToLower().Contains(pageParams.Term.ToLower()) ||
+                                        p.MiniCurriculo.ToLower().Contains(pageParams.Term.ToLower()) ||
+                                        p.User.UltimoNome.ToLower().Contains(pageParams.Term.ToLower())) &&
+                                        p.User.Funcao == Domain.Enum.Funcao.Palestrante)
+                          .OrderBy(p => p.Id);
+
+            return await PageList<Palestrante>.CreateAsync(query, pageParams.PageNumber, pageParams.PageSize);
+        }
+
+        public async Task<Palestrante> GetPalestranteByUserIdAsync(int userId, bool includeEventos = false)
+        {
+            IQueryable<Palestrante> query = _context.Palestrantes
+                                                    .Include(p => p.RedesSociais)
+                                                    .Include(p => p.User);
 
             if (includeEventos)
             {
@@ -27,41 +49,7 @@ namespace ProEventos.Persistence
             }
 
             query = query.OrderBy(p => p.Id)
-                            .Where(p => p.User.PrimeiroNome.ToLower()
-                                        .Contains(nome.ToLower()));
-
-            return await query.ToArrayAsync();
-        }
-
-        public async Task<Palestrante[]> GetAllPalestrantesAsync(bool includeEventos = false)
-        {
-            IQueryable<Palestrante> query = _context.Palestrantes
-                                                    .Include(p => p.RedesSociais);
-
-            if (includeEventos)
-            {
-                query = query.Include(p => p.PalestrantesEventos)
-                                .ThenInclude(PE => PE.Evento);
-            }
-
-            query = query.OrderBy(p => p.Id);
-
-            return await query.ToArrayAsync();
-        }
-
-        public async Task<Palestrante> GetAllPatestranteByIdAsync(int palestranteId, bool includeEventos = false)
-        {
-            IQueryable<Palestrante> query = _context.Palestrantes
-                                                    .Include(p => p.RedesSociais);
-
-            if (includeEventos)
-            {
-                query = query.Include(p => p.PalestrantesEventos)
-                                .ThenInclude(PE => PE.Evento);
-            }
-
-            query = query.OrderBy(p => p.Id)
-                            .Where(p => p.Id == palestranteId);
+                            .Where(p => p.UserId == userId);
 
             return await query.FirstOrDefaultAsync();
         }

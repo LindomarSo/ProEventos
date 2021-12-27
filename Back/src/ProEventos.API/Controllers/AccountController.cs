@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ProEventos.API.Extensions;
+using ProEventos.API.Helpers;
 using ProEventos.Application.Contratos;
 using ProEventos.Application.Dtos;
 
@@ -19,11 +20,13 @@ namespace ProEventos.API.Controllers
     {
         private readonly IAccountService _accountService;
         private readonly ITokenService _tokenService;
+        private readonly IUtils _utils;
 
-        public AccountController(IAccountService accountService, ITokenService tokenService)
+        public AccountController(IAccountService accountService, ITokenService tokenService, IUtils utils)
         {
             _accountService = accountService;
             _tokenService = tokenService;
+            _utils = utils;
         } 
 
         [HttpGet("getUser")] 
@@ -134,5 +137,35 @@ namespace ProEventos.API.Controllers
                 );
             }
         } 
+
+        [HttpPost("upload-image")]
+        public async Task<IActionResult> UploadImage()
+        {
+            try
+            {
+                var user = await _accountService.GetUserByUserNameAsync(User.GetUserName());
+
+                if(user == null) return Unauthorized();
+
+                var file = Request.Form.Files[0];
+                if(file.Length > 0)
+                {
+                    if(user.ImageURL != null)
+                    {
+                        _utils.DeleteImage(user.ImageURL, "Images");
+                    }
+
+                    user.ImageURL = await _utils.SaveImage(file, "Images");
+
+                    user = await _accountService.UpdateAccountAsync(user);
+                }
+
+                return Ok(user);
+            }
+            catch(Exception ex)
+            {
+                return this.StatusCode(StatusCodes.Status500InternalServerError, $"Erro {ex.Message}");
+            }
+        }
     }
 }
