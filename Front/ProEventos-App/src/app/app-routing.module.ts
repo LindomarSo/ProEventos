@@ -12,6 +12,7 @@ import { RegistrationComponent } from './components/user/registration/registrati
 import { UserComponent } from './components/user/user.component';
 import { AuthGuard } from './guard/auth.guard';
 import { HomeComponent } from './components/home/home.component';
+import { PalestranteListaComponent } from './components/palestrantes/palestrante-lista/palestrante-lista.component';
 
 const routes: Routes = [
   { path:'', redirectTo:'home', pathMatch: 'full' },
@@ -23,6 +24,7 @@ const routes: Routes = [
       { path: 'user', redirectTo:'user/perfil' },
       { path: 'user/perfil', component: PerfilComponent },
       { path:'eventos', redirectTo:'eventos/listar', pathMatch: 'full' },
+      { path:'palestrantes', redirectTo:'palestrantes/listar', pathMatch: 'full' },
       {
         path: 'eventos', component: EventosComponent,
         children : [
@@ -31,9 +33,14 @@ const routes: Routes = [
           { path: 'listar', component: EventosListComponent }
         ]
       },
-      { path: 'palestrantes', component: PalestrantesComponent },
+      {
+        path: 'palestrantes', component: PalestrantesComponent,
+        children:[
+          { path: 'listar', component: PalestranteListaComponent }
+        ]
+      },
       { path: 'dashboard', component: DashboardComponent },
-      { path: 'contato', component: ContatoComponent }
+      { path: 'contato', component: ContatoComponent },
     ]
   },
   {

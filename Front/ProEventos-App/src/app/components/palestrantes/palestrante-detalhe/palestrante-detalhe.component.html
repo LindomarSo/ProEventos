@@ -1,0 +1,18 @@
+<div class="form-group my-3 col-12">
+  <h3 class="border-bottom">Palestrante</h3>
+</div>
+<form [formGroup]="form">
+  <div><label class="mb-2" for="">Mini Curriculo</label>
+    <textarea
+    type="text"
+    formControlName="miniCurriculo"
+    [ngClass]="{'is-invalid': form.get('miniCurriculo')?.errors && form.get('miniCurriculo')?.touched }"
+    class="form-control" ></textarea>
+    <div class="invalid-feedback">
+      Por favor atualize o Curriculo
+    </div>
+    <small class="form-text" [ngClass]="corDaDescricao">
+      {{situacaoDoForm}}
+    </small>
+  </div>
+</form>

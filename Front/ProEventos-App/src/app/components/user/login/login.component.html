@@ -24,7 +24,13 @@
         placeholder="Senha"
         required>
 			<div class="d-grid gap-2">
-        <button [disabled]="loginForm.invalid" class="btn-primary btn btn-lg" type="submit">Entrar</button>
+        <button
+          [disabled]="loginForm.invalid"
+          class="btn-primary btn btn-lg"
+          type="submit">
+          <span [ngClass]="{'spinner-border spinner-border-sm mr-1' : load }"></span>
+              Entrar
+        </button>
       </div>
 			<p class="mt-4 mb-2 text-muted">Não tem login? Cadastre-se abaixo</p>
 			<a class="btn btn-lg text-primary" routerLink="/user/registrar">Quero me cadastrar</a>

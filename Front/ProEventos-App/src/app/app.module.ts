@@ -17,6 +17,7 @@ import { NgxSpinnerModule, NgxSpinnerService } from "ngx-spinner";
 import { BsDatepickerModule, BsLocaleService } from 'ngx-bootstrap/datepicker';
 import { NgxCurrencyModule } from "ngx-currency";
 import { PaginationModule } from 'ngx-bootstrap/pagination';
+import { TabsModule } from 'ngx-bootstrap/tabs';
 
 import { AppComponent } from './app.component';
 import { EventosComponent } from './components/eventos/eventos.component';
@@ -36,6 +37,12 @@ import { RegistrationComponent } from './components/user/registration/registrati
 import { AccountService } from './services/account.service';
 import { JwtInterceptor } from './interceptor/jwt.interceptor';
 import { HomeComponent } from './components/home/home.component';
+import { PerfilDetalheComponent } from './components/user/perfil/perfil-detalhe/perfil-detalhe.component';
+import { PalestranteListaComponent } from './components/palestrantes/palestrante-lista/palestrante-lista.component';
+import { PalestranteDetalheComponent } from './components/palestrantes/palestrante-detalhe/palestrante-detalhe.component';
+import { RedesSociaisComponent } from './components/redes-sociais/redes-sociais.component';
+import { PalestranteService } from './services/palestrante.service';
+import { RedeSocialService } from './services/redeSocial.service';
 defineLocale('pt-br', ptBrLocale);
 
 @NgModule({
@@ -43,6 +50,8 @@ defineLocale('pt-br', ptBrLocale);
     AppComponent,
     EventosComponent,
     PalestrantesComponent,
+    PalestranteDetalheComponent,
+    PalestranteListaComponent,
     NavComponent,
     DateTimeFormatPipe,
     TituloComponent,
@@ -54,7 +63,9 @@ defineLocale('pt-br', ptBrLocale);
     UserComponent,
     LoginComponent,
     RegistrationComponent,
-    HomeComponent
+    HomeComponent,
+    PerfilDetalheComponent,
+    RedesSociaisComponent,
   ],
   imports: [
     BrowserModule,
@@ -62,6 +73,7 @@ defineLocale('pt-br', ptBrLocale);
     BrowserAnimationsModule,
     FormsModule,
     ReactiveFormsModule,
+    TabsModule.forRoot(),
     CollapseModule.forRoot(),
     BsDatepickerModule.forRoot(),
     TooltipModule.forRoot(),
@@ -81,6 +93,8 @@ defineLocale('pt-br', ptBrLocale);
   providers: [
     AccountService,
     EventoService,
+    PalestranteService,
+    RedeSocialService,
     BsModalService,
     ToastrService,
     NgxSpinnerService,

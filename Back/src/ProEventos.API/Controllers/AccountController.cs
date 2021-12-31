@@ -152,10 +152,10 @@ namespace ProEventos.API.Controllers
                 {
                     if(user.ImageURL != null)
                     {
-                        _utils.DeleteImage(user.ImageURL, "Images");
+                        _utils.DeleteImage(user.ImageURL, "Perfil");
                     }
 
-                    user.ImageURL = await _utils.SaveImage(file, "Images");
+                    user.ImageURL = await _utils.SaveImage(file, "Perfil");
 
                     user = await _accountService.UpdateAccountAsync(user);
                 }

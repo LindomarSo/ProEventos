@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { AbstractControlOptions, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
-import { ValidatorField } from '@app/helpers/ValidatorField';
+import { FormGroup } from '@angular/forms';
 import { UserUpdate } from '@app/models/identity/userUpdate';
 import { AccountService } from '@app/services/account.service';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { ToastrService } from 'ngx-toastr';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-perfil',
@@ -15,84 +14,55 @@ import { ToastrService } from 'ngx-toastr';
 export class PerfilComponent implements OnInit {
 
   public form!: FormGroup;
-  public userUpdate = {} as UserUpdate;
+  public usuario = {} as UserUpdate;
   public perfil: string = "Perfil";
+  public file: File[] = [];
+  public emptyImage = './assets/semImage.png';
+  public urlImage = environment.apiURL + 'Resources/Perfil/';
 
-  public get f(): any
+  public get ehPalestrante(): boolean
   {
-    return this.form.controls;
+    return this.usuario.funcao === 'Palestrante';
   }
 
-  constructor(private fb: FormBuilder,
-              private accountService: AccountService,
-              private toastr: ToastrService,
+  constructor(private accountService: AccountService,
               private spinner: NgxSpinnerService,
-              private router: Router) { }
+              private toastr: ToastrService) { }
 
   public ngOnInit() {
-    this.validation();
-    this.carregarUsuario();
+
   }
 
-  public onSubmit(): void
+  public setFormValue(user: UserUpdate): void
   {
-    this.atualizarUsuario();
+    this.usuario = user;
+    this.emptyImage = this.usuario.imageURL != null ? this.urlImage + this.usuario.imageURL : this.emptyImage;
   }
 
-  public atualizarUsuario():void
+  public onFileChage(event: any): void
   {
-    this.spinner.show();
-    this.userUpdate = {... this.form.value};
-    this.accountService.updateUser(this.userUpdate).subscribe(
-      () => {
-        this.toastr.success('Usuário atualizado com sucesso.');
-      },
-      (error: any) => {
-        this.toastr.error('Não foi possível atualizar o usuário');
-        console.error(error);
-      }
-    ).add(() => this.spinner.hide());
+    const reader = new FileReader();
+
+    reader.onload = (evento: any) => this.emptyImage = evento.target.result;
+
+    this.file = event.target.files;
+
+    reader.readAsDataURL(this.file[0]);
+
+    this.uploadImage();
   }
 
-  public validation(): void
-  {
-    const formOptions: AbstractControlOptions = {
-      validators: ValidatorField.MustMatch('password', 'confirmarPassword')
-    };
-
-    this.form = this.fb.group({
-      userName: [''],
-      titulo: ['NaoInformado', [Validators.required]],
-      primeiroNome: ['', [Validators.required]],
-      ultimoNome: ['', [Validators.required]],
-      email: ['', [Validators.required, Validators.email]],
-      phoneNumber: ['', [Validators.required]],
-      funcao: ['NaoInformado', [Validators.required]],
-      descricao: ['', [Validators.required]],
-      password: ['', [Validators.required, Validators.minLength(4)]],
-      confirmarPassword: ['', [Validators.required]],
-    }, formOptions);
-  }
-
-  public cleanScream(event: any): void
-  {
-    event.preventDefault();
-    this.form.reset();
-  }
-
-  public carregarUsuario(): void
+  public uploadImage(): void
   {
     this.spinner.show();
-    this.accountService.getUser().subscribe(
-      (user: UserUpdate) => {
-        this.userUpdate = user;
-        this.form.patchValue(this.userUpdate);
-        this.toastr.success('Usuário carregado com sucesso.');
+    this.accountService.uploadImage(this.file).subscribe(
+      (usuario: UserUpdate) => {
+        this.usuario.imageURL = usuario.imageURL;
+        this.toastr.success("Imagem carregada com sucesso");
       },
       (error: any) => {
         console.error(error);
-        this.toastr.error('Erro ao carregar o usuário');
-        this.router.navigate(['/dashboard']);
+        this.toastr.error('Erro ao realizar o upload');
       }
     ).add(() => this.spinner.hide());
   }

@@ -12,6 +12,7 @@ import { ToastrService } from 'ngx-toastr';
 export class LoginComponent implements OnInit {
 
   public model = {} as UserLogin;
+  public load = false;
 
   constructor(private accountService: AccountService,
               private router: Router,
@@ -22,6 +23,7 @@ export class LoginComponent implements OnInit {
 
   public login(): void
   {
+    this.load = true;
     this.accountService.login(this.model).subscribe(
       () => { this.router.navigateByUrl('/dashboard'); },
       (error: any) => {
@@ -30,6 +32,6 @@ export class LoginComponent implements OnInit {
         else
           console.error(error);
       }
-    )
+    ).add(() => this.load = false)
   }
 }

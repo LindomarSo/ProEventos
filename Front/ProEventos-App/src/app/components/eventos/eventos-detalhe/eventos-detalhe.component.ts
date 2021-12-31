@@ -260,7 +260,7 @@ export class EventosDetalheComponent implements OnInit {
   {
     const reader = new FileReader();
 
-    reader.onload =  (event: any) => this.imagemURL = event.target.result;
+    reader.onload =  (evento: any) => this.imagemURL = evento.target.result;
 
     this.file = event.target.files;
     reader.readAsDataURL(this.file[0]);

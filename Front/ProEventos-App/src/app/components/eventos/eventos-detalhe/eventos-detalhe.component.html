@@ -208,6 +208,23 @@
       </div>
     </div>
     </div>
+
+    <!-- REDES SOCIAIS -->
+
+    <div class="card rounded shadow-sm mt-3" *ngIf="modeEditar">
+      <div class="p-3">
+        <div class="d-flex border-bottom">
+          <h2 class="me-auto">
+            Redes Sociais do Evento
+          </h2>
+          <h2>
+            <i class="fas fa-share-square"></i>
+          </h2>
+        </div>
+        <app-redes-sociais [eventoId]="eventoId"></app-redes-sociais>
+      </div>
+    </div>
+        <!-- REDES SOCIAIS -->
   </div>
   <div class="col-md-4" *ngIf="modeEditar">
     <div [formGroup]="form" class="card-evento-view shadow-sm">
